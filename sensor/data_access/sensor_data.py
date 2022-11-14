@@ -7,6 +7,8 @@ import pandas as pd
 from sensor.configuration.mongo_db_connection import MongoDBClient
 from sensor.constant.database import DATABASE_NAME
 from sensor.exception import SensorException
+from sensor.logger import logging
+
 
 
 class SensorData:
@@ -32,11 +34,16 @@ class SensorData:
             """
             if database_name is None:
                 collection = self.mongo_client.database[collection_name]
+                logging.info(f"collection_name={collection}")
 
             else:
                 collection = self.mongo_client[database_name][collection_name]
 
+                logging.info(f"collection name is {collection}")
+
             df = pd.DataFrame(list(collection.find()))
+
+            logging.info(f"dataframe is {df}")
 
             if "_id" in df.columns.to_list():
                 df = df.drop(columns=["_id"], axis=1)
