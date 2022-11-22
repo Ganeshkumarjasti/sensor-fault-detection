@@ -24,6 +24,8 @@ class DataValidation:
     def validate_number_of_columns(self,dataframe:pd.DataFrame)->bool:
         try:
             number_of_columns = len(self._schema_config["columns"])
+            logging.info(f"Required number of columns: {number_of_columns}")
+            logging.info(f"Data frame has columns: {len(dataframe.columns)}")
             if len(dataframe.columns)==number_of_columns:
                 return True
             return False
@@ -56,7 +58,7 @@ class DataValidation:
     def detect_dataset_drift(self,base_df,current_df,threshold=0.05)->bool:
         try:
             status=True
-            report =[]
+            report ={}
             for column in base_df.columns:
                 d1 = base_df[column]
                 d2 = current_df[column]
@@ -77,7 +79,7 @@ class DataValidation:
             #Create directory
             dir_path = os.path.dirname(drift_report_file_path)
             os.makedirs(dir_path,exist_ok=True)
-            write_yaml_file(file_path=drift_report_file_path,content=report,)
+            write_yaml_file(file_path=drift_report_file_path,content=report)
             return status
         except Exception as e:
             raise SensorException(e,sys)
@@ -107,11 +109,11 @@ class DataValidation:
 
             status = self.is_numerical_column_exist(dataframe=train_dataframe)
             if not status:
-                error_message= f"{error_message}Train dataframe does not contain all numerical columns.\n"
+                error_message=f"{error_message}Train dataframe does not contain all numerical columns.\n"
 
             status = self.is_numerical_column_exist(dataframe=test_dataframe)
             if not status:
-                error_message= f"{error_message}Test dataframe does not contain all numerical columns.\n"
+                error_message=f"{error_message}Test dataframe does not contain all numerical columns.\n"
 
             if len(error_message)>0:
                 raise Exception(error_message)
